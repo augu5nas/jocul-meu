@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detectorul de manipulare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Special+Elite&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#efe6cf;--ink:#1c1a17;--red:#c8102e;--blue:#1d4e89;--yel:#ffe066;--grn:#2e7d32}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper) repeating-linear-gradient(0deg,#0000 0 3px,#0000000a 3px 4px);color:var(--ink);font:18px/1.55 Lora,Georgia,serif;overflow-x:hidden}
+main{max-width:660px;margin:0 auto;padding:14px 16px 40px}
+.mast{border-top:6px double var(--ink);border-bottom:3px solid var(--ink);text-align:center;padding:8px 0;margin-bottom:12px}
+small,.tag,.mono{font-family:"Special Elite","Courier New",monospace}
+.mast small{letter-spacing:.1em;text-transform:uppercase;font-size:.75rem}
+h1,h2{font-family:"Playfair Display",Georgia,serif;font-weight:900;line-height:1.05;margin:.2em 0 .3em}
+h1{font-size:2.5rem}h2{font-size:1.5rem;border-bottom:2px solid var(--ink);padding-bottom:2px;margin-top:1.3em}
+p{margin:.5em 0}.lead{font-style:italic;font-size:1.1rem}.mic{font-size:.88rem;opacity:.8}
+.stats{display:flex;gap:8px;margin:14px 0}
+.stats div{flex:1;text-align:center;border:2px solid var(--ink);padding:6px 2px;font-family:"Special Elite",monospace;font-size:.78rem;background:#fff9}
+.stats strong{display:block;font-family:"Playfair Display",serif;font-size:1.9rem;color:var(--red)}
+.clip{position:relative;background:#fffdf5;border:2px solid var(--ink);padding:14px;margin:20px 0;box-shadow:5px 5px 0 var(--ink)}
+.clip:nth-of-type(odd){transform:rotate(-.5deg)}.clip:nth-of-type(even){transform:rotate(.4deg)}
+.clip::before{content:"";position:absolute;top:-11px;left:50%;width:84px;height:20px;margin-left:-42px;background:#ffe066d9;border:1px solid #0002;transform:rotate(-2deg)}
+.clip h3{margin:0 0 4px;font-family:"Playfair Display",serif;font-size:1.15rem}
+button,.b{font-family:"Special Elite","Courier New",monospace;text-transform:uppercase;letter-spacing:.05em;font-size:1rem;min-height:52px;width:100%;margin:8px 0;padding:10px 16px;border:3px solid var(--ink);background:#fffdf5;color:var(--ink);cursor:pointer;display:block;text-align:center;text-decoration:none}
+button:hover,.b:hover{background:var(--yel)}
+button:focus-visible,.b:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+button:disabled{opacity:.4;cursor:default}
+.pr{background:var(--ink);color:var(--paper)}.pr:hover{background:var(--red);color:#fff}
+.rand{display:flex;gap:10px}.rand button{flex:1;transform:rotate(-1deg)}.rand button+button{transform:rotate(1deg)}
+button.ok{color:var(--grn);border-color:var(--grn)}button.no{color:var(--red);border-color:var(--red)}
+.niv{display:flex;gap:10px}.niv button[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
+.card{background:#fffdf5;border:2px solid var(--ink);padding:12px;margin:14px 0;box-shadow:5px 5px 0 var(--ink)}
+.tag{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin:0 0 6px}
+.sms{background:#dfe9f5;border:2px solid var(--blue);border-radius:16px 16px 16px 2px;padding:10px 14px}
+.stire{font-family:"Playfair Display",serif;font-weight:700;font-size:1.3rem}
+.card img{width:100%;max-height:60vh;object-fit:contain;background:#d9cfb4;display:block;border:2px solid var(--ink)}
+.cap{font-size:.9rem;font-style:italic;margin:6px 0 0}
+.bara{height:12px;border:2px solid var(--ink);background:#fff}.bara div{height:100%;width:0;background:repeating-linear-gradient(45deg,var(--ink) 0 6px,#555 6px 12px);transition:width .3s}
+.fb{border:2px dashed var(--ink);background:#fffdf5;padding:10px 14px;margin:12px 0}
+.fb.ok1{border-color:var(--grn)}.fb.no1{border-color:var(--red)}
+.fb strong{font-family:"Playfair Display",serif;font-size:1.25rem}
+.joke{background:var(--yel);padding:6px 10px;font-size:.95rem;margin:8px 0 0}
+.duel{display:flex;gap:12px}.dl{flex:1;padding:6px;margin:0;min-height:0;background:#fffdf5}.dl img{aspect-ratio:4/3;max-height:34vh}.dl span{display:block;margin-top:4px}
+@media(max-width:520px){.duel{flex-direction:column}.dl img{max-height:30vh}}
+.sf{padding-left:1.2em}.sf li{margin:.5em 0}
+.gr{display:flex;gap:10px;border-left:5px solid var(--red);background:#fffdf5;padding:8px 10px;margin:10px 0}
+.gr img{width:84px;height:84px;object-fit:cover;flex:none;border:2px solid var(--ink)}
+.scor{font-family:"Special Elite",monospace;font-size:4.2rem;line-height:1;color:var(--red);margin:.2em 0;display:inline-block;border:5px solid var(--red);padding:4px 16px;transform:rotate(-3deg)}
+.sec{display:flex;justify-content:space-between;border-bottom:1px dotted var(--ink);padding:6px 2px}
+details{border:2px solid var(--ink);background:#fffdf5;padding:8px 14px;margin:14px 0;font-size:.9rem}summary{cursor:pointer;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{width:auto;min-height:0;margin:0;padding:6px 10px;text-transform:none;letter-spacing:0;font-family:Lora,Georgia,serif;font-size:1.02rem;border-width:2px}
+.chip[aria-pressed=true]{background:var(--yel)}.chip.hit{background:#b9e4bb;border-color:var(--grn)}.chip.miss{background:#ffd3d3;border-color:var(--red);border-style:dashed}.chip.fa{text-decoration:line-through;border-color:var(--red)}
+.opt{text-align:left;text-transform:none;letter-spacing:0;font-family:Lora,Georgia,serif;font-size:1.02rem}
+.lab{position:relative;cursor:crosshair}.lab img{width:100%;max-height:62vh;object-fit:contain;background:#d9cfb4;border:2px solid var(--ink);display:block}
+.dot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border:3px solid var(--red);border-radius:50%;pointer-events:none}.dot.g{border-color:var(--grn);background:#2e7d3233}
+.stp.on{background:var(--yel)}
+</style>
+</head>
+<body>
+<main>
+
+<section id="start">
+  <div class="mast"><small>Ediție specială · Ploiești · Citește înainte să crezi</small><h1>Detectorul de manipulare</h1><small>Ziarul în care nu ai voie să crezi tot ce vezi</small></div>
+  <p class="lead">Făcut de elevi, pentru elevii din Ploiești. În fiecare zi vezi poze, titluri și mesaje. Unele sunt reale. Altele sunt făcute de IA sau inventate ca să te păcălească, să te sperie sau să-ți golească contul. Tu poți face diferența?</p>
+  <div class="stats">
+    <div><strong id="nF">0</strong>fotografii</div>
+    <div><strong id="nJ">0</strong>mesaje și știri</div>
+    <div><strong id="nE">4</strong>etape</div>
+  </div>
+
+  <h2>Pe prima pagină: probleme adevărate</h2>
+  <div class="clip"><h3>„Mamă, am telefon nou”</h3>Pe 11 februarie 2026, Poliția Prahova a făcut 7 percheziții într-un caz de SMS-uri în care infractorii se dădeau drept copiii victimelor. Pagubele: peste 80.000 de lei.</div>
+  <div class="clip"><h3>Alerte care nu erau alerte</h3>În aprilie 2026, Ministerul Afacerilor Interne a avertizat asupra unui mesaj fals dat drept RO-Alert, făcut ca să stârnească panică.</div>
+  <div class="clip"><h3>Amenzi inventate</h3>În mai 2026, șoferii au primit SMS-uri cu amenzi false și link de plată. Poliția a cerut verificarea doar pe canale oficiale.</div>
+  <div class="clip"><h3>Poze care nu există</h3>Pozele făcute cu IA arată tot mai bine. Mai jos vezi clădiri din orașul nostru, unele reale, altele create de noi cu IA.</div>
+  <div class="clip"><h3>Despre colegiul nostru</h3>Colegiul Național „Nichita Stănescu” din Ploiești (str. Nalbei nr. 3) a fost înființat la 1 septembrie 1958, ca Școala Medie Mixtă nr. 6 „C.I. Parhon”. Tocmai de aceea vrem să știm cu toții să ne apărăm online.</div>
+
+  <h2>Cum se joacă</h2>
+  <ol class="sf" id="em">
+    <li><b>Testul 1:</b> poze din Ploiești, reale sau făcute de IA? Fără explicații, ca să vedem cât știi.</li>
+    <li><b>Știri și mesaje:</b> după fiecare răspuns afli de ce. Dacă nimerești mai multe la rând, ai o serie de foc.</li>
+    <li><b>Testul 2:</b> alte poze, ca să vedem dacă ai învățat ceva.</li>
+    <li><b>Marele duel:</b> două poze aproape la fel. Una e reală, una e falsă. O alegi pe cea reală.</li>
+  </ol>
+  <ol class="sf" id="hm" hidden>
+    <li><b>Ochi de expert:</b> spui dacă poza e reală și cât de sigur ești. Încrederea contează la punctaj.</li>
+    <li><b>Vânătoarea de indicii:</b> atingi semnele de alarmă ascunse într-un mesaj.</li>
+    <li><b>Laboratorul foto:</b> găsești greșeala dintr-o poză făcută cu IA.</li>
+    <li><b>Două adevăruri și o minciună:</b> prinzi afirmația falsă, contra cronometru.</li>
+    <li><b>Misiunea:</b> o poveste în care alegerile tale schimbă finalul.</li>
+    <li><b>Ordinea verificării:</b> pui pașii în ordinea în care ar trebui făcuți.</li>
+  </ol>
+  <p>Între etape ai mici pauze: îți spunem cum afectează aceste păcăleli oamenii din orașul nostru.</p>
+  <h2>Alege dificultatea</h2>
+  <div class="niv" role="group" aria-label="Nivel">
+    <button type="button" id="nu" aria-pressed="true">Ușor: jocul clasic</button>
+    <button type="button" id="ng" aria-pressed="false">Greu: Misiunea expertului</button>
+  </div>
+  <p class="mic" id="dn">Fără limită de timp. Înveți din explicații.</p>
+  <button type="button" class="pr" id="bs">Începe jocul</button>
+  <button type="button" id="bsf">Cum verifici o informație</button>
+  <p class="mic">Jocul nu colectează date personale.</p>
+</section>
+
+<section id="sfaturi" hidden>
+  <h1>Cum verifici o informație</h1>
+  <ol class="sf">
+    <li><b>Cine a publicat?</b> Un cont nou sau anonim e un semnal de alarmă.</li>
+    <li><b>Caută în alte două surse independente.</b> Dacă o găsești doar într-un loc, nu o crede.</li>
+    <li><b>Imagini:</b> căutare inversă (Google Lens). Defectele ajută, dar lipsa lor nu e o dovadă.</li>
+    <li><b>Mesaj de la „cineva cunoscut”:</b> sună persoana pe numărul vechi înainte să trimiți bani sau coduri.</li>
+    <li><b>Presiune:</b> „acum”, „trimite la toți”, „premiu”, „ȘOC” sunt semne de manipulare.</li>
+    <li><b>Alerte oficiale:</b> unele sunt reale. Verifică pe canalele poliției, ISU sau ale școlii.</li>
+  </ol>
+  <button type="button" class="pr" id="bi">Înapoi la ziar</button>
+</section>
+
+<section id="joc" hidden>
+  <p class="mono" id="prog" aria-live="polite"></p>
+  <div class="bara" aria-hidden="true"><div id="bar"></div></div>
+  <p class="mic" id="timp" hidden></p>
+  <div class="card" id="card"></div>
+  <div class="rand" id="rand" role="group" aria-label="Alege răspunsul"><button type="button" class="ok" id="b1"></button><button type="button" class="no" id="b2"></button></div>
+  <div id="fb" aria-live="polite"></div>
+  <button type="button" class="pr" id="bn" hidden>Următoarea</button>
+</section>
+
+<section id="pauza" hidden>
+  <p class="mono">☕ Pauză de cafea</p>
+  <h1 id="pt"></h1><p class="lead" id="px"></p>
+  <div class="clip"><h3>Cum ne afectează la Ploiești</h3><p id="pi"></p></div>
+  <p class="joke" id="pj"></p>
+  <button type="button" class="pr" id="bc">Gata, mergem mai departe</button>
+</section>
+
+<section id="rez" hidden>
+  <h1>Scor final</h1>
+  <p class="scor" id="sc"></p>
+  <p><strong id="eti"></strong></p>
+  <div id="det"></div>
+  <p id="rv"></p>
+  <div id="lg"></div>
+  <details><summary>Surse și instrumente</summary><ul id="ls"></ul><p id="ia"></p></details>
+  <button type="button" class="pr" id="bd">Joacă din nou</button>
+  <a class="b ok" id="lf" href="#" target="_blank" rel="noopener" hidden>Spune-ne părerea ta</a>
+</section>
+<section id="hard" hidden>
+  <p class="mono" id="hh"></p>
+  <div class="bara" aria-hidden="true"><div id="hbar"></div></div>
+  <h1 id="ht"></h1><p class="lead" id="hi"></p>
+  <p class="mono" id="htimer" hidden></p>
+  <div id="hb"></div>
+  <div id="hf" aria-live="polite"></div>
+  <button type="button" class="pr" id="hn" hidden>Următoarea</button>
+</section>
+</main>
+
+<script>
+// ===== SETĂRI =====
+const CFG = {
+  IA: ["Gemini (imagini)", "Designer (imagini)", "Claude (cod)"],
+  FORM: "", E_PRE: "", E_POST: "", // Google Forms: link + ID-urile câmpurilor din „link precompletat”
+  SEC: 20                          // secunde la nivelul greu
+};
+
+// ===== POZE (folderul imagini/): f01-f10 reale, f11-f20 generate cu IA =====
+const CAP = "Poză primită pe un grup, prezentată ca fiind din Ploiești.";
+const RE = {
+ f01: "Fabrică cu sigla Unilever, fotografiată de pe bulevard: cabluri, asfalt crăpat, cer încețoșat. Imperfecțiunile unei poze făcute pe loc.",
+ f02: "Clădire istorică din Ploiești, cu vegetație necontrolată și gard în față: detalii neregulate, ca în realitate.",
+ f03: "Clădire de colț, cu sigla BCR, cabluri, mașini și oameni obișnuiți.",
+ f04: "Colegiul Național „I.L. Caragiale”: numele și inscripția latină se citesc corect, iar în jur sunt cabluri și semne rutiere.",
+ f05: "Colegiul Național „Nichita Stănescu”: firma e corectă („PLOIEȘTI”), iar cadrul e banal, ca la orice poză făcută cu telefonul.",
+ f06: "Catedrala „Sf. Ioan Botezătorul”, cu schele pe o latură: detalii de șantier, imperfecte.",
+ f07: "Clădire de birouri cu sigla Petrom, fotografiată de jos, cu cabluri în cadru.",
+ f08: "Stadionul echipei FC Petrolul: literele și panourile de pe tribună se citesc, iar scaunele au culori neregulate.",
+ f09: "Palatul Culturii din Ploiești: inscripția e corectă, mașinile și oamenii sunt firești.",
+ f10: "Muzeul Ceasului din Ploiești: inscripția e corectă, cu cabluri și bolarzi în cadru."
+};
+const IAX = {
+ f11: "Versiune făcută cu IA după colegiul „I.L. Caragiale”. Culorile sunt prea intense, totul e prea curat, iar inscripția latină de sub nume are litere încurcate.",
+ f12: "Versiune făcută cu IA a clădirii cu sigla BCR. Culorile sunt prea intense, iar chioșcul din stânga are scris fără sens.",
+ f13: "Versiune făcută cu IA a clădirii Petrom. Albastrul e prea intens, iar norii reflectați în geamuri sunt prea curați.",
+ f14: "Versiune făcută cu IA a Muzeului Ceasului. Galbenul e mai strălucitor, iar zidurile sunt netede, fără pete sau urme de timp.",
+ f15: "Versiune făcută cu IA a stadionului. Doar „FC PETROLUL” se citește bine: panourile publicitare au litere fără sens, iar lângă numele echipei apare un semn în plus.",
+ f16: "Versiune făcută cu IA a intrării în colegiul „Nichita Stănescu”. Pe firmă scrie „PLDIEȘTI” în loc de „PLOIEȘTI”, iar verdele e prea intens.",
+ f17: "Versiune făcută cu IA a Catedralei „Sf. Ioan Botezătorul”. Cerul și florile sunt prea intense, iar detaliile pietrei sunt netezite.",
+ f18: "Imagine generată cu IA. Amestecă stiluri (turn cu ceas neo-gotic, gard de fier verde) într-o clădire care nu seamănă cu nimic cunoscut din Ploiești. Lumina e prea perfectă.",
+ f19: "Pe firmă scrie „FABRICA IHOUSTRIALĂ”: literele greșite trădează IA, iar instalațiile par lipite una de alta. Nu te baza doar pe text, generatoarele se îmbunătățesc.",
+ f20: "Cupola și turnul cu ceas arată ca niște clădiri din alte orașe, puse laolaltă. Oamenii și câinii sunt prea bine așezați, iar parcul e prea curat."
+};
+const FOTO = [];
+Object.keys(RE).forEach((k) => FOTO.push(["P", "i", CAP, true, "Fotografie reală. " + RE[k], "fotografie reală, Ploiești", "imagini/" + k + ".jpg"]));
+Object.keys(IAX).forEach((k) => FOTO.push(["P", "i", CAP, false, IAX[k], "imagine generată cu IA (" + (k > "f17" ? "Gemini" : "Designer") + ")", "imagini/" + k + ".jpg"]));
+// Perechi pentru Marele duel: [reală, falsă]. Primele 7 sunt aceeași clădire, reală și refăcută de IA.
+const PERECHI = [["f04","f11"],["f03","f12"],["f07","f13"],["f10","f14"],["f08","f15"],["f05","f16"],["f06","f17"],["f02","f18"],["f01","f19"],["f09","f20"]];
+const byF = (k) => FOTO.find((e) => e[6] === "imagini/" + k + ".jpg");
+
+// ===== MESAJE ȘI ȘTIRI =====
+// [set, tip, text, legitim?, explicație, sursă]  set: u = ușor, g = greu · tip: m = mesaj, s = știre/postare
+const TXT = [
+ ["u","m","Ai câștigat 500 de skinuri gratis! Intră pe link și scrie parola contului tău de joc ca să le primești.",false,"Nimeni nu dă premii pe bază de parolă. Parola contului nu o dai nimănui.","exemplu creat de noi, după escrocherii cu conturi de jocuri"],
+ ["u","m","Biblioteca: Cartea rezervată a ajuns. O poți ridica până vineri, cu cartea ta de cititor.",true,"Nu cere bani, parole sau click pe linkuri. Poți verifica sunând la bibliotecă.","exemplu creat de noi"],
+ ["u","s","ȘOC! Toate școlile se închid în noiembrie, anunță „surse secrete”!",false,"Închiderea școlilor o anunță școala sau inspectoratul, nu „surse secrete”. Verifică pe site-urile oficiale.","exemplu creat de noi"],
+ ["u","m","Poliția Rutieră: Aveți o amendă neplătită de 450 de lei. Plătiți în 24 de ore la linkul de mai jos ca să evitați majorarea.",false,"Poliția nu trimite amenzi prin SMS cu link de plată. Urgența și linkul sunt semnele fraudei. MAI a avertizat în 2026 asupra unor SMS-uri de acest tip.","exemplu creat de noi; avertisment real MAI: Antena 3, 13.05.2026"],
+ ["u","m","Mama: Treci pe la bunica după ore. Eu ajung acasă la 18:00. Ia cheia de la vecina.",true,"Nu cere bani, parole sau click și vine de la un contact cunoscut. La nevoie, o suni pe mama.","exemplu creat de noi"],
+ ["g","s","Postare pe Facebook: „RO-ALERT: un copil a fost răpit în cartierul tău! Distribuie la toți ACUM!”",false,"Alertele RO-Alert vin pe telefon, nu prin postări de distribuit. MAI a avertizat în 2026 asupra unor mesaje false de acest tip. Atenție: există și alerte reale despre copii dispăruți, deci verifică pe canalele oficiale ale poliției.","postare creată de noi; avertisment real MAI: Agerpres, 25.04.2026"],
+ ["g","s","Poliția din Prahova a făcut 7 percheziții într-un caz cu SMS-uri în care infractorii se dădeau drept copiii victimelor. Prejudiciu: peste 80.000 de lei.",true,"Numește instituția, data și cifrele și o găsești la mai multe agenții de presă.","REAL: informat.ro / Agerpres, 11.02.2026"],
+ ["g","m","Salut, mamă! Mi s-a stricat telefonul, ăsta e numărul meu nou. Poți plăti urgent o factură de 800 de lei? Îți explic mai târziu.",false,"Număr nou, bani, grabă: tiparul din cazul Prahova. Sună-ți copilul pe numărul vechi.","exemplu creat de noi; caz real: informat.ro / Agerpres, 11.02.2026"],
+ ["g","m","Salut! Te rog votează-mă la concursul de talente ca să câștig o bursă: vot-concurs.example",false,"Cere un click pe un link ciudat. Conturile sparte folosesc des „votează-mă”. Întreabă persoana pe alt canal.","exemplu creat de noi, după avertismente ale poliției"],
+ ["g","s","Ministerul Afacerilor Interne a avertizat în mai 2026 asupra unor SMS-uri cu amenzi false trimise șoferilor.",true,"Numește instituția și luna, iar avertismentul apare în presă. Așa verifici: cauți aceeași informație la alte surse.","REAL: Antena 3, 13.05.2026"],
+ ["g","s","Palatul Culturii din Ploiești a fost proiectat inițial ca Palat al Justiției.",true,"Informația apare în surse locale și pe Wikimedia Commons. Faptele adevărate pot părea neobișnuite, de aceea verifici, nu ghicești.","REAL: Wikimedia Commons; zilesinopti.ro"],
+ ["u","m","Dirigintele: Joi la 18:00 e ședința cu părinții, în sala clasei. Vă rugăm să confirmați prezența.",true,"Nu cere bani, parole sau click și vine de la o persoană pe care o cunoști. Poți confirma direct la școală.","exemplu creat de noi"],
+ ["u","s","Ultimele 10 bilete la meciul Petrolului, cu 90% reducere, doar azi pe bilete-meci-ieftin.example!",false,"Reducere uriașă, stoc „ultimele 10” și grabă: rețeta clasică. Biletele se iau de pe site-ul oficial al clubului.","exemplu creat de noi, după tipare de înșelătorii cu bilete"],
+ ["g","m","Salut, sunt de la firma de curierat. Coletul tău e blocat în vamă. Plătește 9 lei taxă aici: colet-taxa.example",false,"Taxă mică, link și grabă: nu contează banii, contează datele cardului pe care le introduci. Verifică în aplicația firmei de curierat.","exemplu creat de noi, după tipare de înșelătorii cu colete"],
+ ["g","s","Muzeul Ceasului „Nicolae Simache” din Ploiești este singurul muzeu al ceasului din țară.",true,"Informația apare în mai multe surse independente, inclusiv în presa locală.","REAL: Adevărul Ploiești; Mediafax"]
+];
+
+const ET = {m:["Sigur","Înșelătorie"], s:["Credibil","Fals"], i:["Fotografie reală","Generată cu IA"]};
+const TIP = {m:"Mesaj primit", s:"Știre sau postare", i:"Fotografie"};
+const NUME = {pre: "Testul 1 · poze", joc: "Știri și mesaje", post: "Testul 2 · poze", duel: "Marele duel"};
+const S = {nivel:"u", t:null};
+const $ = (id) => document.getElementById(id);
+const h = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const lipsa = [];
+const gata = Promise.all(FOTO.map((e) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = () => { lipsa.push(e[6]); r(); }; i.src = e[6]; })));
+const ok = (e) => !lipsa.includes(e[6]);
+
+function arata(n) {
+  ["start", "sfaturi", "joc", "pauza", "rez", "hard"].forEach((s) => { $(s).hidden = s !== n; });
+  window.scrollTo(0, 0);
+  const t = $(n).querySelector("h1"); if (t) { t.tabIndex = -1; t.focus({preventScroll: true}); }
+}
+function amesteca(l) { const c = l.slice(); for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [c[i], c[j]] = [c[j], c[i]]; } return c; }
+const jum = (l) => { const m = Math.ceil(l.length / 2); return [l.slice(0, m), l.slice(m)]; };
+const POZ = ["Bravo, ochi de vultur! 🦅", "Corect! Nici IA nu te păcălește azi 😎", "Exact! Detectivul din tine face ore suplimentare.", "Da! Înșelătorii tocmai și-au pierdut o victimă."];
+const NEG = ["Au! Te-a păcălit, dar nu ești singurul 😅", "Aproape! Rămâne între noi, citește explicația.", "Hopa! Așa se învață: greșești azi, nu mai greșești mâine.", "Nu-i bai, chiar și adulții cad în plasă."];
+const rnd = (a) => a[Math.floor(Math.random() * a.length)];
+const FAZE = ["pre", "joc", "post", "duel"], AF = {pre: 0, joc: 1, post: 4};
+const INFO = [
+ ["Poze care par reale, dar nu sunt", "Pozele făcute cu IA nu mai au mereu defecte. Pot arăta o clădire din orașul tău care nu există sau un eveniment care nu s-a întâmplat.", "O poză falsă pusă pe un grup de cartier se împrăștie în câteva minute. După aceea, oamenii nu mai știu ce să creadă, nici măcar despre știrile adevărate.", "Dacă poza „din Ploiești” are firme în franceză, nu ești în Ploiești, ești în imaginația unui program."],
+ ["Alerte false, panică adevărată", "În 2026, un mesaj fals dat drept RO-Alert a circulat pe rețelele sociale, iar Ministerul Afacerilor Interne a spus că nu el l-a trimis.", "Dacă oamenii se obișnuiesc cu alerte false, încep să le ignore și pe cele adevărate. La Ploiești, în octombrie 2025, un copil dat dispărut a fost găsit după un mesaj RO-Alert real.", "Regula simplă: dacă mesajul zice „distribuie la toți”, ești testat. Nu distribui."],
+ ["„Mamă, am telefon nou”", "Pe 11 februarie 2026, Poliția Prahova a făcut 7 percheziții într-un caz în care infractorii scriau părinților că sunt copiii lor și cereau bani. Pagubele au trecut de 80.000 de lei.", "Cei mai păcăliți sunt părinții și bunicii: oameni care își iubesc copiii și nu stau să verifice. Un simplu apel pe numărul vechi rezolvă totul.", "Temă pentru acasă: sună-ți bunica și stabiliți o parolă de familie. E cel mai ieftin antivirus."],
+ ["SMS-ul cu amenda", "În mai 2026, mai mulți șoferi au primit SMS-uri cu amenzi false, cu link de plată. Poliția a spus că amenzile nu se trimit așa, iar tentativele se pot raporta la DNSC, la numărul 1911.", "Un click poate da infractorilor datele cardului, iar banii pot dispărea în câteva minute. Cei care se grăbesc să „își plătească datoriile” cad primii.", "Dacă n-ai permis și primești amendă de viteză, felicitări: ești victima unei înșelătorii, nu a unui radar."],
+ ["Verifici în 30 de secunde", "Întreabă-te: cine a publicat asta? Mai scrie cineva despre ea? Poza apare și în alte locuri? Cineva îmi cere bani sau grabă?", "Dacă fiecare elev din colegiu face asta, înșelătorii își pierd cea mai ușoară pradă: pe noi, cei grăbiți.", "Cel mai bun detectiv e cel care mai întâi respiră și abia apoi dă click."]
+];
+
+async function porneste() {
+  $("bs").disabled = true; await gata; $("bs").disabled = false;
+  if (S.nivel === "g") return hStart();
+  const ia = amesteca(FOTO.filter((e) => !e[3] && ok(e))).slice(0, 10), re = amesteca(FOTO.filter((e) => e[3] && ok(e))).slice(0, 10);
+  const [a1, a2] = jum(ia), [r1, r2] = jum(re); // 10 IA + 10 reale, împărțite egal între cele două teste foto
+  S.fp = amesteca([...a1, ...r1]); S.fq = amesteca([...a2, ...r2]);
+  S.dl = amesteca(PERECHI.map((p) => [byF(p[0]), byF(p[1])]).filter((p) => ok(p[0]) && ok(p[1]))).slice(0, 6)
+    .map((p) => { const q = Math.random() < 0.5; return {a: q ? p[0] : p[1], b: q ? p[1] : p[0], real: q ? 0 : 1, ia: p[1]}; });
+  S.pre = [0, 0]; S.joc = [0, 0]; S.post = [0, 0]; S.duel = [0, 0]; S.gres = []; S.serie = 0;
+  faza("pre");
+}
+function faza(f) {
+  S.f = f; S.l = f === "pre" ? S.fp : f === "post" ? S.fq : f === "duel" ? S.dl : amesteca(TXT.filter((e) => e[0] === S.nivel));
+  S.i = 0; S.sc = 0;
+  if (!S.l.length) { S[f] = [0, 0]; return dupa(); }
+  intreaba();
+}
+function dupa() { if (S.f === "duel") return rezultat(); const f = FAZE[FAZE.indexOf(S.f) + 1]; info(INFO[AF[S.f]], () => faza(f)); }
+function info(x, cb) { S.cb = cb; $("pt").textContent = x[0]; $("px").textContent = x[1]; $("pi").textContent = x[2]; $("pj").textContent = "😄 " + x[3]; arata("pauza"); }
+function antet() { const n = S.l.length; $("prog").textContent = NUME[S.f] + " · " + (S.i + 1) + " din " + n; $("bar").style.width = (S.i / n * 100) + "%"; $("fb").replaceChildren(); $("bn").hidden = true; arata("joc"); }
+function intreaba() {
+  clearInterval(S.t); antet(); S.rasp = false;
+  if (S.f === "duel") return duelInt();
+  const e = S.l[S.i]; $("rand").hidden = false;
+  $("b1").textContent = ET[e[1]][0]; $("b2").textContent = ET[e[1]][1]; $("b1").disabled = $("b2").disabled = false;
+  const c = $("card"); c.replaceChildren(h("p", "tag", TIP[e[1]]));
+  if (e[6]) { const im = h("img"); im.src = e[6]; im.alt = "Fotografie de evaluat"; c.append(im, h("p", "cap", e[2])); }
+  else c.append(h("p", e[1] === "m" ? "sms" : "stire", e[2]));
+  const cr = S.f === "joc" && S.nivel === "g"; $("timp").hidden = !cr; if (cr) cron();
+}
+function duelInt() {
+  const e = S.l[S.i]; $("rand").hidden = true; $("timp").hidden = true;
+  const c = $("card"); c.replaceChildren(h("p", "tag", "Una e reală, una e generată cu IA. Care e cea reală? Atinge poza."));
+  const g = h("div", "duel");
+  [e.a, e.b].forEach((x, k) => { const b = h("button", "dl"); b.type = "button"; const im = h("img"); im.src = x[6]; im.alt = "Poza " + (k ? "B" : "A"); b.append(im, h("span", "", k ? "Poza B" : "Poza A")); b.onclick = () => duelRasp(k); g.append(b); });
+  c.append(g);
+}
+function duelRasp(k) {
+  if (S.rasp) return; S.rasp = true;
+  const e = S.l[S.i], corect = k === e.real;
+  document.querySelectorAll(".dl").forEach((b) => { b.disabled = true; });
+  S.serie = corect ? S.serie + 1 : 0; if (corect) S.sc++; else S.gres.push(e.ia);
+  feed(corect, ["Poza reală era " + (e.real ? "B" : "A") + ".", e.ia[4]], null);
+}
+function feed(corect, rows, src) {
+  const b = h("div", "fb " + (corect ? "ok1" : "no1"));
+  b.append(h("strong", "", (corect ? "Corect!" : "Nu chiar.") + (S.serie > 1 ? " 🔥 Serie: " + S.serie : "")));
+  rows.forEach((r) => b.append(h("p", "", r)));
+  if (src) b.append(h("p", "mic", "Sursa: " + src));
+  b.append(h("p", "joke", rnd(corect ? POZ : NEG)));
+  $("fb").replaceChildren(b); continua();
+}
+function continua() { const n = $("bn"); n.textContent = S.i < S.l.length - 1 ? "Următoarea" : "Continuă"; n.hidden = false; n.focus(); }
+function cron() {
+  let r = CFG.SEC; $("timp").textContent = "Timp rămas: " + r + " s";
+  S.t = setInterval(() => { r--; $("timp").textContent = "Timp rămas: " + r + " s"; if (r <= 0) raspunde(null); }, 1000);
+}
+function raspunde(v) { // true = sigur/credibil/real · false = fals · null = timp expirat
+  if (S.rasp) return; S.rasp = true; clearInterval(S.t);
+  const e = S.l[S.i], corect = v === e[3];
+  if (corect) S.sc++; else S.gres.push(e);
+  $("b1").disabled = $("b2").disabled = true;
+  if (S.f === "joc") { S.serie = corect ? S.serie + 1 : 0; feed(corect, [(v === null ? "Timpul a expirat. " : "") + "Răspuns corect: " + ET[e[1]][e[3] ? 0 : 1] + ".", e[4]], e[5]); return; }
+  $("fb").replaceChildren(h("div", "fb", "Răspuns înregistrat.")); continua();
+}
+function urmatoarea() {
+  S.i++;
+  if (S.i >= S.l.length) { S[S.f] = [S.sc, S.l.length]; return dupa(); }
+  if (S.f === "joc" && (S.i === 3 || S.i === 6)) return info(INFO[S.i === 3 ? 2 : 3], intreaba);
+  intreaba();
+}
+function rezultat() {
+  const [a, an] = S.pre, [j, jn] = S.joc, [b, bn] = S.post, [d, dn] = S.duel, tot = a + b + j + d, nt = an + bn + jn + dn;
+  const p = nt ? Math.round(tot / nt * 100) : 0;
+  $("sc").textContent = p + " / 100";
+  $("eti").textContent = (p >= 90 ? "Detectiv de elită 🕵️" : p >= 70 ? "Ochi format 👀" : p >= 50 ? "Pe drumul bun 🚶" : "Încă ești pe lista înșelătorilor, dar mai încearcă 😄") + " · " + tot + " răspunsuri corecte din " + nt;
+  const dt = $("det"); dt.replaceChildren();
+  [["Testul 1 · poze", a, an], ["Știri și mesaje", j, jn], ["Testul 2 · poze", b, bn], ["Marele duel", d, dn]].forEach((r) => { const x = h("div", "sec"); x.append(h("span", "", r[0]), h("strong", "", r[1] + "/" + r[2])); dt.append(x); });
+  const df = (bn ? b / bn : 0) - (an ? a / an : 0);
+  $("rv").textContent = !an || !bn ? "" : df > 0 ? "La testul foto 2 ai fost mai bun decât la primul. Testele sunt scurte, deci e doar un indiciu." : df === 0 ? "Același procent la cele două teste foto. Citește explicațiile de mai jos." : "Testul foto 2 a ieșit mai slab. Citește explicațiile de mai jos și mai încearcă.";
+  const lg = $("lg"); lg.replaceChildren();
+  if (S.gres.length) {
+    lg.append(h("h2", "", "Ce ai greșit"));
+    S.gres.forEach((e) => { const x = h("div", "gr"); if (e[6]) { const im = h("img"); im.src = e[6]; im.alt = ""; x.append(im); } const t = h("div"); t.append(h("p", "", e[6] ? "Răspuns corect: " + ET.i[e[3] ? 0 : 1] + "." : e[2]), h("p", "mic", (e[6] ? "" : "Răspuns corect: " + ET[e[1]][e[3] ? 0 : 1] + ". ") + e[4])); x.append(t); lg.append(x); });
+  }
+  $("ls").replaceChildren(); [...new Set([...TXT, ...FOTO].map((e) => e[5]))].forEach((x) => $("ls").append(h("li", "", x)));
+  $("ia").textContent = "Instrumente IA: " + CFG.IA.join(", ") + ".";
+  const lf = $("lf");
+  if (CFG.FORM) { lf.href = CFG.FORM + "?usp=pp_url&entry." + CFG.E_PRE + "=" + a + "&entry." + CFG.E_POST + "=" + b; lf.hidden = false; } else lf.hidden = true;
+  arata("rez");
+}
+// ===== MODUL GREU: alt joc, alte exerciții =====
+const HS = {};
+const geo = (im) => { const r = im.getBoundingClientRect(), k = Math.min(r.width / im.naturalWidth, r.height / im.naturalHeight), w = im.naturalWidth * k, hh = im.naturalHeight * k; return {r, w, h: hh, ox: (r.width - w) / 2, oy: (r.height - hh) / 2}; };
+const sh = (l) => amesteca(l);
+// Vânătoarea de indicii: |fraza suspectă~de ce| (textul fără | nu e suspect)
+const FLAGS = [
+ "Salut mamă! |Mi s-a stricat telefonul,~scuza clasică, ca să nu o poți suna| ăsta e |numărul meu nou.~nu poți verifica pe numărul vechi| Poți plăti |urgent~grabă: nu te lasă să gândești| o factură de |800 de lei?~cere bani| |Îți explic mai târziu.~ocolește întrebările|",
+ "|Poliția Rutieră:~Poliția nu trimite amenzi prin SMS| Aveți o amendă neplătită. |Plătiți în 24 de ore~termen scurt, ca să nu gândiți| la |linkul de mai jos~link de plată necunoscut| ca să evitați |majorarea de 50%.~amenințare cu bani|",
+ "|ȘOC!~strigă ca să te sperie| |Se interzic telefoanele în toată țara de luni~afirmație uriașă, fără sursă oficială| anunță |un utilizator de pe un grup.~sursă anonimă| |Distribuie la toți!~cere să împrăștii vestea|",
+ "Salut, sunt de la firma de curierat. Coletul tău e |blocat în vamă.~scuză inventată ca să te sperie| Plătește |9 lei taxă~sumă mică, ca să nu te gândești| aici: |colet-taxa.example~link necunoscut| |acum,~grabă| altfel e returnat.",
+ "Mama: Treci pe la bunica după ore. Eu ajung acasă la 18:00. Ia cheia de la vecina."];
+// Laboratorul foto: [poza, x%, y%, toleranță, explicație]
+const LAB = [
+ ["imagini/f16.jpg", 50, 32, 11, "Pe firmă scrie „PLDIEȘTI” în loc de „PLOIEȘTI”. Textul mic e punctul slab al multor generatoare."],
+ ["imagini/f19.jpg", 55, 59, 9, "Firma spune „FABRICA IHOUSTRIALĂ”: literele sunt încurcate."],
+ ["imagini/f15.jpg", 69, 41, 8, "Lângă „FC PETROLUL” apare un semn în plus, care nu aparține scrisului."],
+ ["imagini/f11.jpg", 48, 68, 9, "Inscripția latină de sub numele colegiului are litere încurcate."]];
+const LIE = [
+ {s: [["Muzeul Ceasului din Ploiești este singurul muzeu al ceasului din țară.", 1], ["Colegiul Național „Nichita Stănescu” a fost înființat la 1 septembrie 1958.", 1], ["Palatul Culturii din Ploiești a fost proiectat inițial ca primărie.", 0]], e: "Minciuna: Palatul Culturii a fost proiectat ca Palat al Justiției."},
+ {s: [["Pe 11 februarie 2026, Poliția Prahova a făcut 7 percheziții în cazul SMS-urilor „de la fiul sau fiica”.", 1], ["În mai 2026, șoferii au primit SMS-uri cu amenzi false și link de plată.", 1], ["RO-Alert nu a fost folosit niciodată în România pentru un copil dispărut.", 0]], e: "Minciuna: în octombrie 2025, un copil dispărut la Ploiești a fost găsit după un mesaj RO-Alert real."},
+ {s: [["Căutarea inversă a unei poze arată unde a mai apărut ea pe internet.", 1], ["Dacă o poză nu are defecte vizibile, e sigur reală.", 0], ["Un mesaj care cere bani „urgent” de la un număr nou se verifică sunând persoana pe numărul vechi.", 1]], e: "Minciuna: pozele IA bune nu au defecte vizibile. Contează proveniența."},
+ {s: [["Tentativele de fraudă online se pot raporta la DNSC, la numărul 1911.", 1], ["O alertă oficială reală îți cere să o distribui la cât mai mulți oameni.", 0], ["O bancă nu îți cere codurile primite prin SMS.", 1]], e: "Minciuna: alertele oficiale nu îți cer să le distribui, ci să iei măsuri."}];
+const STORY = [
+ {t: "Bunica te sună speriată: a primit un SMS „de la tine”: „Mamaie, mi-am luat telefon nou, trimite-mi 500 de lei în contul ăsta. Nu spune nimănui!” Ce faci?", o: [["Îi spui să trimită repede banii, ca să nu rămâi fără telefon", 1, 0, "Ai ales calea rapidă. Exact asta voia înșelătorul: grabă."], ["Îi spui să nu trimită nimic și te uiți la numărul din SMS", 2, 2, "Bun reflex: oprești banii și verifici înainte să acționezi."], ["Îi spui să te sune pe numărul din SMS", 1, 0, "Numărul din SMS aparține înșelătorului, nu ție."]]},
+ {t: "Bunica spune că a trimis deja banii. Ce faci acum?", o: [["Suni imediat banca, să încerce să oprească transferul, și anunți poliția", 0, 2, "Bravo: în astfel de cazuri contează fiecare minut."], ["Aștepți să vezi dacă „tu” îi mai scrii", 0, 0, "Timpul lucrează pentru înșelător."], ["Îi spui bunicii că e vina ei", 0, 0, "Nu ajută: bunica e victimă, nu vinovată."]]},
+ {t: "Ai verificat: SMS-ul vine de la un număr necunoscut, nu de la tine. Bunica e liniștită, dar poate primi alt mesaj mâine. Ce faci?", o: [["Stabiliți o „parolă de familie”, știută doar de voi", 0, 2, "Perfect: o parolă simplă oprește multe înșelătorii."], ["Îi iei telefonul bunicii", 0, 0, "Nu rezolvi nimic, doar o faci să se simtă controlată."], ["Ștergi mesajul și gata", 0, 1, "E ceva, dar fără parolă și fără raport riști să se repete."]]},
+ {t: "Povestea s-a încheiat cu bine. Ce faci ca să nu pățească și alții?", o: [["Raportezi mesajul (poliție sau DNSC, 1911) și le spui și vecinilor", 0, 2, "Exact: fiecare raport ajută poliția să oprească rețeaua."], ["Postezi poza SMS-ului cu numele bunicii", 0, 0, "Nu publica datele altora: poți face rău."], ["Nu spui nimănui, să nu fie rușine", 0, 0, "Rușinea ajută înșelătorii. Povestește."]]}];
+const ORD = [
+ {s: "Primești un SMS de la un număr necunoscut: „Mamă, am telefon nou, trimite 800 de lei urgent.”", st: ["Nu trimiți bani", "Suni copilul pe numărul vechi", "Povestești unui adult din familie", "Raportezi mesajul (poliție sau DNSC, 1911)"]},
+ {s: "Vezi o poză virală: „Clădirea din centru se demolează mâine!”", st: ["Nu o distribui", "Verifici cine a postat", "Cauți poza cu Google Lens", "Cauți știrea în presa locală"]},
+ {s: "Primești un SMS: „Amendă neplătită, plătește la link în 24 de ore.”", st: ["Nu apeși pe link", "Verifici pe site-ul oficial, nu din SMS", "Raportezi tentativa la DNSC (1911)", "Ștergi mesajul"]}];
+const HX = [
+ {n: "Ochi de expert", i: "Spune dacă poza e reală, apoi cât de sigur ești. Sigur și corect dă cele mai multe puncte, dar o greșeală sigură costă.", r: () => sh([...sh(FOTO.filter((e) => !e[3] && ok(e))).slice(0, 3), ...sh(FOTO.filter((e) => e[3] && ok(e))).slice(0, 3)]), f: xConf},
+ {n: "Vânătoarea de indicii", i: "Atinge părțile suspecte din mesaj. Nu marca ce e normal: falsele alarme scad punctajul.", r: () => FLAGS, f: xFlags},
+ {n: "Laboratorul foto", i: "Poza e făcută cu IA. Atinge locul unde se vede greșeala. Ai 3 încercări.", r: () => LAB.filter((l) => !lipsa.includes(l[0])), f: xLab},
+ {n: "Două adevăruri și o minciună", i: "Trei afirmații, una e falsă. Găsește minciuna. Ai 25 de secunde.", r: () => sh(LIE), f: xLie},
+ {n: "Misiunea", i: "Alegi ce faci. Alegerile tale schimbă povestea.", r: () => [0, 1, 2, 3], f: xStory},
+ {n: "Ordinea verificării", i: "Atinge pașii în ordinea în care i-ai face.", r: () => sh(ORD), f: xOrder}];
+function hStart() { HS.res = []; hStage(0); }
+function hStage(k) { HS.k = k; HS.l = HX[k].r(); HS.i = 0; HS.pt = 0; HS.mx = 0; if (!HS.l.length) { HS.res[k] = [0, 0]; return hAfter(); } hRound(); }
+function hRound() {
+  const x = HX[HS.k]; arata("hard"); clearInterval(HS.t);
+  $("hh").textContent = "Exercițiul " + (HS.k + 1) + " din " + HX.length + (HS.l.length > 1 ? " · runda " + (HS.i + 1) + "/" + HS.l.length : "");
+  $("hbar").style.width = ((HS.k + HS.i / HS.l.length) / HX.length * 100) + "%"; $("ht").textContent = x.n; $("hi").textContent = x.i;
+  $("hb").replaceChildren(); $("hf").replaceChildren(); $("hn").hidden = true; $("htimer").hidden = true; HS.d = false; x.f(HS.l[HS.i], HS.i);
+}
+function hscore(p, m) { HS.pt += p; HS.mx += m; HS.d = true; clearInterval(HS.t); $("htimer").hidden = true; }
+function hshow(rows, cls) {
+  const b = h("div", "fb " + (cls || "")); rows.forEach((r, i) => b.append(i ? h("p", "", r) : h("strong", "", r)));
+  $("hf").replaceChildren(b); const n = $("hn"); n.textContent = HS.i < HS.l.length - 1 ? "Următoarea" : "Continuă"; n.hidden = false; n.focus();
+}
+function hnext() { HS.i++; if (HS.i < HS.l.length) return hRound(); HS.res[HS.k] = [Math.max(0, HS.pt), HS.mx]; hAfter(); }
+function hAfter() { const k = HS.k; if (k >= HX.length - 1) return hResult(); info(INFO[k], () => hStage(k + 1)); }
+const btn = (c, t) => { const b = h("button", c, t); b.type = "button"; return b; };
+
+function xConf(e) {
+  const b = $("hb"), c = h("div", "card"), im = h("img"); im.src = e[6]; im.alt = "Fotografie de evaluat"; c.append(h("p", "tag", "Fotografie"), im, h("p", "cap", e[2])); b.append(c);
+  const v = h("div", "rand"), bR = btn("ok", "Reală"), bI = btn("no", "Generată cu IA"), cf = h("div"); v.append(bR, bI); b.append(v); cf.hidden = true; b.append(cf);
+  cf.append(h("p", "mono", "Cât de sigur ești?"));
+  [["Sigur", 3], ["Cam sigur", 2], ["Nu știu", 1]].forEach((q) => { const x = btn("", q[0]); x.onclick = () => {
+    if (HS.d) return; const okk = HS.v === e[3], w = q[1], p = okk ? w : -(w - 1);
+    hscore(p, 3);
+    hshow([okk ? "Corect." : "Nu chiar.", "Răspuns corect: " + (e[3] ? "reală" : "generată cu IA") + ".", e[4], okk && w === 3 ? "Sigur și corect: punctaj maxim." : !okk && w === 3 ? "Ai fost prea sigur pe tine: o greșeală sigură costă cel mai mult." : okk && w === 1 ? "Corect, dar nesigur: ai ratat puncte." : "Încrederea ta se potrivește cu rezultatul."], okk ? "ok1" : "no1"); }; cf.append(x); });
+  const pick = (val) => { HS.v = val; bR.disabled = bI.disabled = true; cf.hidden = false; };
+  bR.onclick = () => pick(true); bI.onclick = () => pick(false);
+}
+function xFlags(txt) {
+  const U = [], b = $("hb"), box = h("div", "chips"), card = h("div", "card"); card.append(h("p", "tag", "Mesaj primit"), box); b.append(card);
+  txt.split("|").forEach((p, i) => { if (i % 2) { const q = p.split("~"); U.push({t: q[0], r: q[1], f: true}); } else p.split(/\s+/).filter(Boolean).forEach((w) => U.push({t: w, r: null, f: false})); });
+  U.forEach((u) => { const c = btn("chip", u.t); c.setAttribute("aria-pressed", "false"); c.onclick = () => { if (HS.d) return; u.s = !u.s; c.setAttribute("aria-pressed", String(!!u.s)); }; u.el = c; box.append(c); });
+  const g = btn("pr", "Gata, verifică"); b.append(g);
+  g.onclick = () => {
+    if (HS.d) return; const fl = U.filter((u) => u.f), hit = fl.filter((u) => u.s).length, fa = U.filter((u) => u.s && !u.f).length;
+    U.forEach((u) => { u.el.disabled = true; if (u.s && u.f) u.el.className = "chip hit"; else if (u.f) u.el.className = "chip miss"; else if (u.s) u.el.className = "chip fa"; });
+    const p = fl.length ? Math.max(0, hit - fa) : (fa ? 0 : 1); hscore(p, fl.length || 1); g.hidden = true;
+    hshow([fl.length ? "Semne prinse: " + hit + " din " + fl.length + (fa ? ". Alarme false: " + fa + "." : ".") : (fa ? "Mesaj curat, dar ai văzut pericol acolo unde nu era." : "Mesaj curat: nu era nimic de semnalat."), ...(fl.length ? fl.map((u) => "• „" + u.t + "”: " + u.r) : ["Să vezi pericol peste tot e tot o greșeală: contează să deosebești."])], p === (fl.length || 1) ? "ok1" : "no1");
+  };
+}
+function xLab(l) {
+  const w = h("div", "lab"), im = h("img"); im.src = l[0]; im.alt = "Poză generată cu IA"; w.append(im);
+  $("hb").append(h("p", "tag", "Găsește greșeala. Încercări rămase: 3"), w); let t = 3;
+  const mark = (x, y, g) => { const k = geo(im), d = h("div", "dot" + (g ? " g" : "")); d.style.left = (k.ox + x / 100 * k.w) + "px"; d.style.top = (k.oy + y / 100 * k.h) + "px"; w.append(d); };
+  im.onclick = (ev) => {
+    if (HS.d) return; const k = geo(im), x = (ev.clientX - k.r.left - k.ox) / k.w * 100, y = (ev.clientY - k.r.top - k.oy) / k.h * 100;
+    if (x < 0 || x > 100 || y < 0 || y > 100) return;
+    if (Math.hypot(x - l[1], y - l[2]) <= l[3]) { mark(l[1], l[2], true); hscore(t, 3); hshow(["Găsit!", "Puncte: " + t + " din 3.", l[4]], "ok1"); return; }
+    mark(x, y, false); t--;
+    if (t < 1) { mark(l[1], l[2], true); hscore(0, 3); hshow(["Nu l-ai găsit.", "Cercul verde arată unde era greșeala.", l[4]], "no1"); } else $("hb").firstChild.textContent = "Încă nu. Încercări rămase: " + t;
+  };
+}
+function xLie(r) {
+  const b = $("hb"), S3 = sh(r.s); let sec = 25; $("htimer").hidden = false; $("htimer").textContent = "Timp rămas: " + sec + " s";
+  const fin = (k) => { const left = sec, okk = k >= 0 && !S3[k][1]; hscore(okk ? 2 + (left >= 15 ? 1 : 0) : 0, 3); document.querySelectorAll(".opt").forEach((o) => { o.disabled = true; }); hshow([okk ? "Ai prins minciuna!" : k < 0 ? "Timpul a expirat." : "Ai ales un adevăr.", r.e], okk ? "ok1" : "no1"); };
+  S3.forEach((q, k) => { const o = btn("opt", q[0]); o.onclick = () => { if (!HS.d) fin(k); }; b.append(o); });
+  HS.t = setInterval(() => { sec--; $("htimer").textContent = "Timp rămas: " + sec + " s"; if (sec <= 0) fin(-1); }, 1000);
+}
+function xStory(_, i) {
+  const n = i === 0 ? STORY[0] : i === 1 ? STORY[HS.br === 1 ? 1 : 2] : STORY[3], b = $("hb"), c = h("div", "card"); c.append(h("p", "tag", "Pasul " + (i + 1) + " din 4"), h("p", "", n.t)); b.append(c);
+  n.o.forEach((o) => { const x = btn("opt", o[0]); x.onclick = () => { if (HS.d) return; if (i === 0) HS.br = o[1]; hscore(o[2], 2); hshow([o[2] === 2 ? "Alegere bună." : o[2] === 1 ? "Merge, dar se putea mai bine." : "Alegere riscantă.", o[3]], o[2] === 2 ? "ok1" : o[2] ? "" : "no1"); }; b.append(x); });
+}
+function xOrder(r) {
+  const b = $("hb"), card = h("div", "card"), got = [], lst = h("p", "mono", "Ordinea ta: —"); card.append(h("p", "tag", "Situația"), h("p", "stire", r.s)); b.append(card, lst);
+  const btns = sh(r.st).map((t) => { const x = btn("opt stp", t); x.onclick = () => { if (HS.d || x.disabled) return; x.disabled = true; x.className = "opt stp on"; got.push(t); lst.textContent = "Ordinea ta: " + got.map((g, k) => (k + 1) + ". " + g).join("  ·  ");
+    if (got.length === 4) { const p = got.filter((g, k) => g === r.st[k]).length; hscore(p, 4); hshow([p === 4 ? "Ordine perfectă!" : "Pași la locul potrivit: " + p + " din 4.", "Ordinea bună: " + r.st.map((g, k) => (k + 1) + ". " + g).join("  ·  ")], p === 4 ? "ok1" : p > 1 ? "" : "no1"); } }; b.append(x); return x; });
+}
+function hResult() {
+  const dt = $("det"); dt.replaceChildren(); let tot = 0, mx = 0;
+  HS.res.forEach((r, i) => { tot += r[0]; mx += r[1]; const x = h("div", "sec"); x.append(h("span", "", HX[i].n), h("strong", "", r[0] + "/" + r[1])); dt.append(x); });
+  const p = mx ? Math.round(tot / mx * 100) : 0;
+  $("sc").textContent = p + " / 100";
+  $("eti").textContent = (p >= 90 ? "Expert verificator 🕵️" : p >= 70 ? "Inspector 🔎" : p >= 50 ? "Ucenic detectiv 🧐" : "Aspirant cu potențial 😄") + " · " + tot + " puncte din " + mx;
+  $("rv").textContent = "Modul greu măsoară și cât de sigur ești pe tine, nu doar dacă ai nimerit. Încrederea potrivită valorează cât răspunsul corect.";
+  $("lg").replaceChildren(); $("ls").replaceChildren(); [...new Set([...TXT, ...FOTO].map((e) => e[5]))].forEach((x) => $("ls").append(h("li", "", x)));
+  $("ia").textContent = "Instrumente IA: " + CFG.IA.join(", ") + "."; $("lf").hidden = true; arata("rez");
+}
+$("hn").onclick = hnext;
+
+function nivel(n) { S.nivel = n; $("nu").setAttribute("aria-pressed", n === "u"); $("ng").setAttribute("aria-pressed", n === "g"); $("em").hidden = n === "g"; $("hm").hidden = n !== "g"; $("nE").textContent = n === "g" ? 6 : 4; $("dn").textContent = n === "u" ? "Jocul clasic: poze, mesaje și duel. Înveți din explicații." : "Alt joc, alte exerciții: indicii, laborator foto, minciuni, o poveste și ordinea verificării."; }
+
+gata.then(() => { $("nF").textContent = Math.min(10, FOTO.filter((e) => !e[3] && ok(e)).length) + Math.min(10, FOTO.filter((e) => e[3] && ok(e)).length); $("nJ").textContent = TXT.length; });
+$("nu").onclick = () => nivel("u"); $("ng").onclick = () => nivel("g");
+$("bs").onclick = porneste; $("bsf").onclick = () => arata("sfaturi"); $("bi").onclick = () => arata("start");
+$("b1").onclick = () => raspunde(true); $("b2").onclick = () => raspunde(false);
+$("bn").onclick = urmatoarea; $("bc").onclick = () => S.cb(); $("bd").onclick = () => arata("start");
+</script>
+</body>
+</html>
